@@ -28,20 +28,8 @@
         }
 
         #amount {
-            max-width: 120px;
+            max-width: 100px;
             text-align: right;
-        }
-
-        /*
-        #method-2,
-        #method-3,
-        #method-4,
-        #method-5,
-        #method-6,
-        */
-        .values-2,
-        .values-5 {
-            display: none;
         }
 
         .underline {
@@ -66,8 +54,8 @@
 
         .table td,
         .table th {
-            padding: 1.75rem 0;
             /* Bootstrap overrides */
+            padding: 1rem 0;
         }
 
         .table .row-tight td,
@@ -88,21 +76,21 @@
                 <h1>Round Ups examples</h1>
             </div>
         </div>
-        <div class="row vertical-spacer">
-            <div class="col-12 alert alert-info alert-dismissable fade show" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <strong>Instructions</strong>
-                <ul>
-                    <li>Turn variations ON/OFF using the labeled buttons.</li>
-                    <li>Enter an amount to see how they are calculated.</li>
-                </ul>
-            </div>
+
+        <div class="alert alert-info alert-dismissable fade show" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <strong>Instructions</strong>
+            <ul>
+                <li>Turn variations ON/OFF using the labeled buttons.</li>
+                <li>Enter an amount to see how they are calculated.</li>
+            </ul>
         </div>
+
         <div class="row vertical-spacer">
             <div class="col-6 d-flex justify-content-start">
-                <div id="method" class="btn-group btn-group-toggle btn-group-sm mr-4" data-toggle="buttons">
+                <div id="method" class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
                     <label class="btn btn-success active">
                         <input type="checkbox" name="options" id="option4" value="4" autocomplete="off" checked>A+
                     </label>
@@ -123,40 +111,56 @@
                     </label>
                 </div>
             </div>
-            <div class="col-6 d-flex justify-content-end">
-                <div id="values" class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
-                    <label class="btn btn-light active">
-                        <input type="checkbox" name="values" id="value-option1" value="1" autocomplete="off" checked>1
-                    </label>
-                    <label class="btn btn-light">
-                        <input type="checkbox" name="values" id="value-option2" value="2" autocomplete="off">2
-                    </label>
-                    <label class="btn btn-light">
-                        <input type="checkbox" name="values" id="value-option3" value="5" autocomplete="off">5
-                    </label>
-                </div>
-            </div>
+
         </div>
         <table class="table mono">
             <thead>
                 <tr class="row-tight">
                     <th colspan="1">
                         <label for="amount">Transaction Amount</label>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <div class="input-group mr-1">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                    <input type="number" step="0.01" class="form-control" id="amount"
+                                        aria-describedby="Transaction Amount"
+                                        placeholder="Enter a transaction amount..." value="4.99">
+                                </div>
+                                <div class="form-group"> <button id="randomize" class="btn btn-light">Random</button>
+                                </div>
+                            </div>
+                        </div>
                     </th>
                     <th colspan="99" class="text-right">
-                        <label>Round Up Setting</label>
+                        <label>Round Up Setting</label><br />
+                        <small class="text-muted font-weight-normal">Show:&nbsp;</small>
+                        <div id="values" class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
+                            <label id="toggle-details" class="btn btn-outline-secondary active">
+                                <input type="checkbox" autocomplete="off" checked>Details
+                            </label>
+                            <label class="btn btn-outline-secondary active">
+                                <input type="checkbox" name="values" id="value-option1" value="1" autocomplete="off"
+                                    checked>1
+                            </label>
+                            <label class="btn btn-outline-secondary active">
+                                <input type="checkbox" name="values" id="value-option2" value="2" autocomplete="off"
+                                    checked>2
+                            </label>
+                            <label class="btn btn-outline-secondary active">
+                                <input type="checkbox" name="values" id="value-option3" value="5" autocomplete="off"
+                                    checked>5
+                            </label>
+                        </div>
+
                     </th>
                 </tr>
                 <tr class="row-tight">
                     <th>
-                        <div class="input-group mr-4">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">$</span>
-                            </div>
-                            <input type="number" step="0.01" class="form-control" id="amount"
-                                aria-describedby="Transaction Amount" placeholder="Enter a transaction amount..."
-                                value="4.99">
-                        </div>
+                        <small class="text-muted">
+                            <span class="roundamount"></span>&nbsp;to the nearest dollar
+                        </small>
                     </th>
                     <th class="text-right mono values-1" scope="col">$1</th>
                     <th class="text-right mono values-2" scope="col">$2</th>
@@ -241,14 +245,6 @@
                     <td class="text-right values-5"><span id="method-6-5"></span></td>
                 </tr>
             </tbody>
-            <tfoot>
-                <tr>
-                    <th colspan="99">
-                        <small class="text-muted">* Change from the nearest dollar:&nbsp;<span
-                                class="roundamount"></span></small>
-                    </th>
-                </tr>
-            </tfoot>
         </table>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -321,10 +317,12 @@
                         var ru = roundUpMethod(amt, options[i], n),
                             total = (parseFloat(ru) + parseFloat(amt)).toFixed(2);
                         $('#method-' + n + '-' + options[i]).html(
-                            "<span class='text-muted'>$" + amt.toFixed(2) +
-                            "</span><br/><span class='text-muted underline'>+&nbsp;$" + ru +
-                            "</span><br/><strong>$" + total +
-                            "</strong>"
+                            "<span class='text-muted toggle-hook-sum'>$" + amt.toFixed(2) +
+                            "</span>" +
+                            "<br/><strong class='underline toggle-hook-sum-underline'>+&nbsp;$" +
+                            ru +
+                            "</strong><br/><span class='text-muted toggle-hook-sum'>$" + total +
+                            "</span>"
                         );
                     }
                 }
@@ -342,8 +340,23 @@
                 $(selector).css("display", !$(inputEl).is(":checked") ? "table-cell" : "none");
             });
 
-            $('#amount').change();
+            $('#randomize').click(function (e) {
+                $('#amount')
+                    .val(function () {
+                        return (Math.random() * 30).toFixed(2);
+                    })
+                    .change();
+            });
 
+            $('#toggle-details').click(function (e) {
+                $('.toggle-hook-sum').toggle();
+                $('.toggle-hook-sum-underline').toggleClass('underline');
+            })
+
+            /* Set an initial value for the transaction amount */
+            //$('#amount').change();
+            $('#randomize').click();
+            $('#toggle-details').click();
         })
     </script>
 </body>
